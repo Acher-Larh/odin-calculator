@@ -102,3 +102,6 @@ equalsKey.addEventListener('click', function (e)  {
     console.log("result" + resultOperation);
     console.log(operatingNumbers);
 })
+
+// The equals function shouldn't be used to get the result of 12 + 7 + ...; Once "number + operator + number + operator" is keyed, it should display the result. 
+// The equals function will only be used in the case: "number + operator + number + equals".
