@@ -5,7 +5,7 @@
     box-sizing: border-box;
 }
 
-.key, .operator {
+.key, .operator, .equals {
     border: solid #000 1px;
     padding: 8px;
 }
