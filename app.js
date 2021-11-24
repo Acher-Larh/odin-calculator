@@ -25,93 +25,104 @@ function operate(item1, item2, operator){
     }
 }
 
-let isResultDisplay;
+let isDisplayed = false;
 
 const display = document.querySelector(".display");
-
-let displayContent = display.textContent;
 
 const operatorKeys = document.querySelectorAll(".operators .operator");
 
 let operatingNumbers = {
     items: [],
     operators: [],
-    result: 0,
+    result: undefined,
 };
 
 operatorKeys.forEach(key => {
     key.addEventListener('click', function(){
-        if(!isNaN(parseFloat(displayContent))) {operatingNumbers.items.push(parseFloat(displayContent));}
-        display.textContent = `${key.textContent}`;
-        displayContent = display.textContent;
-        operatingNumbers.operators.push(displayContent);
+        if(!isNaN(parseFloat(display.textContent)) && !isDisplayed) {operatingNumbers.items.push(parseFloat(display.textContent));}
+        operatingNumbers.operators.push(key.textContent);
+        isDisplayed = true;
         if(operatingNumbers.operators.length > 1){
             getResult();
+            operatingNumbers.operators.shift();
+
         }
     });
 })
 
-let isOperatorLast;
 const keypad = document.querySelectorAll(".keypad .key");
 keypad.forEach(key => {
     key.addEventListener('click', function() {
-        displayContent = display.textContent;
-        if (display.textContent == 0
-            || display.textContent.includes("*")
-            || display.textContent.includes("+")
-            || display.textContent.includes("/")
-            || display.textContent.includes("-")
-        ){
+        if (display.textContent == 0){
             display.textContent = " ";
-            isOperatorLast = true;
             
         }
-        if(isResultDisplay && isOperatorLast){
-            
+        if(isDisplayed){
             display.textContent = " ";
-            isResultDisplay = false;
-
+            isDisplayed = false;
         }
         display.textContent = `${display.textContent}${key.textContent}`;
-        displayContent = display.textContent;
     } );
 });
 
 const equalsKey = document.querySelector(".equals");
 
-equalsKey.addEventListener('click', getResult);
+equalsKey.addEventListener('click', function ()  {
+    if(!isNaN(parseFloat(display.textContent))) {operatingNumbers.items.push(parseFloat(display.textContent));
+    console.log(parseFloat(display.textContent));}
 
+    display.textContent = " ";        
+    
+    if(!isNaN(operatingNumbers.result)) {
+        operatingNumbers.result = operate(operatingNumbers.result, operatingNumbers.items[0], operatingNumbers.operators[0]);
+    }else {
+        operatingNumbers.result = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
+
+    }
+    
+    display.textContent = operatingNumbers.result;
+
+    if(!isDisplayed){
+        isDisplayed = true;
+    }
+
+    operatingNumbers.items = [];
+    operatingNumbers.operators.shift();
+});
+
+
+const clearButton = document.querySelector(".key.clear");
+clearButton.addEventListener('click', clearTab);
 
 function getResult()  {
-    if(!isNaN(parseFloat(displayContent))) {operatingNumbers.items.push(parseFloat(displayContent));}
-
-    let resultOperation; 
-
-    // console.log(resultOperation);
-    displayContent = " ";
-    display.textContent = " ";    
-    console.log("halo: " + operatingNumbers.items);
-    resultOperation = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
-
-    if(operatingNumbers.operators.length > 0 && operatingNumbers.items.length >= 2){
-        operatingNumbers.operators.shift();
-        operatingNumbers.items.shift();
-        operatingNumbers.items.shift();
-
-    }
-
-    if(resultOperation != undefined) operatingNumbers.items.unshift(resultOperation);
+    display.textContent = " ";        
     
-    if(!isResultDisplay){
-        operatingNumbers.result = resultOperation;
-        display.textContent = operatingNumbers.result;
-        isResultDisplay = true;
-    }
+    if(!isNaN(operatingNumbers.result)) {
+        operatingNumbers.result = operate(operatingNumbers.result, operatingNumbers.items[0], operatingNumbers.operators[0]);
+    }else {
+        operatingNumbers.result = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
 
-    console.log(operatingNumbers);
+    }
+    
+    display.textContent = operatingNumbers.result;
+
+    if(!isDisplayed){
+        isDisplayed = true;
+    }
+    operatingNumbers.items = [];
 }
 
-// The equals function shouldn't be used to get the result of 12 + 7 + ...; Once "number + operator + number + operator" is keyed, it should display the result. 
+function clearTab() {
+    operatingNumbers.items = [];
+    operatingNumbers.operators = [];
+    operatingNumbers.result = undefined;
+    display.textContent = 0;
+}
+
 // The equals function will only be used in the case: "number + operator + number + equals".
 
+// The equals function shouldn't be used to get the result of 12 + 7 + ...; Once "number + operator + number + operator" is keyed, it should display the result. 
+
 // 24/11 -> when a new operation is started, the operations are wrong.
+
+// 24/11 -> when equals is pressed, the next operation will use the result as the first item and also the second. -> fixed some of the redundant code and it was fixed.
