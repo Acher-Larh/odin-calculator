@@ -45,13 +45,13 @@ operatorKeys.forEach(key => {
         display.textContent = `${key.textContent}`;
         displayContent = display.textContent;
         operatingNumbers.operators.push(displayContent);
-        if(operatingNumbers.items.length > 1){
+        if(operatingNumbers.operators.length > 1){
             getResult();
         }
     });
 })
 
-
+let isOperatorLast;
 const keypad = document.querySelectorAll(".keypad .key");
 keypad.forEach(key => {
     key.addEventListener('click', function() {
@@ -63,11 +63,11 @@ keypad.forEach(key => {
             || display.textContent.includes("-")
         ){
             display.textContent = " ";
+            isOperatorLast = true;
             
-        }else if(isResultDisplay){
-            operatingNumbers.items = [];
-            operatingNumbers.operators = [];
-            operatingNumbers.result = 0;
+        }
+        if(isResultDisplay && isOperatorLast){
+            
             display.textContent = " ";
             isResultDisplay = false;
 
@@ -90,21 +90,25 @@ function getResult()  {
     // console.log(resultOperation);
     displayContent = " ";
     display.textContent = " ";    
-        while(operatingNumbers.items.length > 1){
-            console.log(1);
-            resultOperation = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]); 
-            if(operatingNumbers.operators > 0 && operatingNumbers.items >= 2){
-                operatingNumbers.operators.shift();
-                operatingNumbers.items.shift();
-                operatingNumbers.items.shift();
+    console.log("halo: " + operatingNumbers.items);
+    resultOperation = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
 
-            }
-            operatingNumbers.items.unshift(resultOperation);
-            
-        }
+    if(operatingNumbers.operators.length > 0 && operatingNumbers.items.length >= 2){
+        operatingNumbers.operators.shift();
+        operatingNumbers.items.shift();
+        operatingNumbers.items.shift();
+
+    }
+
+    if(resultOperation != undefined) operatingNumbers.items.unshift(resultOperation);
+    
+    if(!isResultDisplay){
         operatingNumbers.result = resultOperation;
-        display.textContent = operatingNumbers.items[0];
+        display.textContent = operatingNumbers.result;
         isResultDisplay = true;
+    }
+
+    console.log(operatingNumbers);
 }
 
 // The equals function shouldn't be used to get the result of 12 + 7 + ...; Once "number + operator + number + operator" is keyed, it should display the result. 
