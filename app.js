@@ -45,8 +45,9 @@ operatorKeys.forEach(key => {
         display.textContent = `${key.textContent}`;
         displayContent = display.textContent;
         operatingNumbers.operators.push(displayContent);
-
-        // console.log("op: " + operatingNumbers);
+        if(operatingNumbers.items.length > 1){
+            getResult();
+        }
     });
 })
 
@@ -78,7 +79,10 @@ keypad.forEach(key => {
 
 const equalsKey = document.querySelector(".equals");
 
-equalsKey.addEventListener('click', function (e)  {
+equalsKey.addEventListener('click', getResult);
+
+
+function getResult()  {
     if(!isNaN(parseFloat(displayContent))) {operatingNumbers.items.push(parseFloat(displayContent));}
 
     let resultOperation; 
@@ -86,22 +90,22 @@ equalsKey.addEventListener('click', function (e)  {
     // console.log(resultOperation);
     displayContent = " ";
     display.textContent = " ";    
-    
-    while(operatingNumbers.items.length > 1){
-        resultOperation = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]); 
+        while(operatingNumbers.items.length > 1){
+            console.log(1);
+            resultOperation = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]); 
+            if(operatingNumbers.operators > 0 && operatingNumbers.items >= 2){
+                operatingNumbers.operators.shift();
+                operatingNumbers.items.shift();
+                operatingNumbers.items.shift();
 
-        operatingNumbers.operators.shift();
-        operatingNumbers.items.shift();
-        operatingNumbers.items.shift();
-        
-        operatingNumbers.items.unshift(resultOperation);
-    }
-    operatingNumbers.result = resultOperation;
-    display.textContent = operatingNumbers.result;
-    isResultDisplay = true;
-    console.log("result" + resultOperation);
-    console.log(operatingNumbers);
-})
+            }
+            operatingNumbers.items.unshift(resultOperation);
+            
+        }
+        operatingNumbers.result = resultOperation;
+        display.textContent = operatingNumbers.items[0];
+        isResultDisplay = true;
+}
 
 // The equals function shouldn't be used to get the result of 12 + 7 + ...; Once "number + operator + number + operator" is keyed, it should display the result. 
 // The equals function will only be used in the case: "number + operator + number + equals".
