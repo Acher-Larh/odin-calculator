@@ -38,11 +38,14 @@ let operatingNumbers = {
     operators: [],
     result: undefined,
 };
-
+let counter;
 operatorKeys.forEach(key => {
     key.addEventListener('click', function(){
         if(!isNaN(parseFloat(display.textContent)) && !isOperated){
             operatingNumbers.items.push(parseFloat(display.textContent));
+            counter = true;
+        }else {
+            counter = false;
         }
         operatingNumbers.operators.push(key.textContent);
         isOperated = true;
@@ -65,6 +68,8 @@ keypad.forEach(key => {
             display.textContent = " ";
             
         }
+
+        if(counter) counter=false;
         if(isOperated){
             display.textContent = " ";
             isOperated = false;
@@ -77,30 +82,47 @@ keypad.forEach(key => {
 const equalsKey = document.querySelector(".equals");
 
 equalsKey.addEventListener('click', function ()  {
-    if(!isNaN(parseFloat(display.textContent))) {operatingNumbers.items.push(parseFloat(display.textContent));
+    if(!isNaN(parseFloat(display.textContent)) && !counter) {operatingNumbers.items.push(parseFloat(display.textContent));
     }
-    
 
-    display.textContent = " ";        
+    
+    let operationResult;
     
     if(!isNaN(operatingNumbers.result)) {
-        operatingNumbers.result = operate(operatingNumbers.result, operatingNumbers.items[0], operatingNumbers.operators[0]);
+        operationResult= operate(operatingNumbers.result, operatingNumbers.items[0], operatingNumbers.operators[0]);
+        console.log("halo");
     }else {
-        operatingNumbers.result = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
-
+        operationResult = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
+        
     }
     
     if(!isDisplayed){
         isDisplayed = true;
     }
-
+    
     if(!isOperated){
         isOperated = true;
     }
-    
+    console.log(operationResult + " 1");
 
+    console.log(operatingNumbers.items + " length");
+    if(operatingNumbers.items.length < 2 && operatingNumbers.result == undefined){
+        operationResult = parseFloat(display.textContent);
+        isDisplayed = false;
+        console.log(operationResult + " 2");
+
+        console.log("no operation stated");
+    }else {
+        display.textContent = " "; 
+    }
     operatingNumbers.items = [];
     operatingNumbers.operators.shift();
+    
+    console.log(operationResult + " 3");
+    operatingNumbers.result = operationResult;
+    display.textContent = operationResult;
+
+    
 });
 
 
