@@ -9,7 +9,7 @@
 body {
     display: flex;
     justify-content: center;
-    margin-top: 250px;
+    margin-top: 50px;
 }
 .key, .operator, .equals {
     border: solid rgb(12, 214, 214) 1px;
