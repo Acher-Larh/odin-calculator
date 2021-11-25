@@ -15,7 +15,7 @@ function divide(item1, item2){
 function operate(item1, item2, operator){
     switch(operator){
         case "/":
-            return divide(item1, item2);
+            return (item2 != 0) ? divide(item1, item2) : "Bitx, yer think this is a joke?!";
         case "*":
             return multiply(item1, item2);
         case "+":
@@ -25,11 +25,13 @@ function operate(item1, item2, operator){
     }
 }
 
-let isDisplayed = false;
+let isOperated = false;
 
 const display = document.querySelector(".display");
 
 const operatorKeys = document.querySelectorAll(".operators .operator");
+
+let isDisplayed = false;
 
 let operatingNumbers = {
     items: [],
@@ -39,28 +41,35 @@ let operatingNumbers = {
 
 operatorKeys.forEach(key => {
     key.addEventListener('click', function(){
-        if(!isNaN(parseFloat(display.textContent)) && !isDisplayed) {operatingNumbers.items.push(parseFloat(display.textContent));}
+        if(!isNaN(parseFloat(display.textContent)) && !isOperated){
+            operatingNumbers.items.push(parseFloat(display.textContent));
+        }
         operatingNumbers.operators.push(key.textContent);
-        isDisplayed = true;
+        isOperated = true;
         if(operatingNumbers.operators.length > 1){
             getResult();
             operatingNumbers.operators.shift();
-
         }
+        isDisplayed = false;
     });
 })
 
 const keypad = document.querySelectorAll(".keypad .key");
 keypad.forEach(key => {
     key.addEventListener('click', function() {
+        if(isDisplayed){
+            isDisplayed = false;
+            clearTab();
+        }
         if (display.textContent == 0){
             display.textContent = " ";
             
         }
-        if(isDisplayed){
+        if(isOperated){
             display.textContent = " ";
-            isDisplayed = false;
+            isOperated = false;
         }
+
         display.textContent = `${display.textContent}${key.textContent}`;
     } );
 });
@@ -69,7 +78,8 @@ const equalsKey = document.querySelector(".equals");
 
 equalsKey.addEventListener('click', function ()  {
     if(!isNaN(parseFloat(display.textContent))) {operatingNumbers.items.push(parseFloat(display.textContent));
-    console.log(parseFloat(display.textContent));}
+    }
+    
 
     display.textContent = " ";        
     
@@ -80,19 +90,20 @@ equalsKey.addEventListener('click', function ()  {
 
     }
     
-    display.textContent = operatingNumbers.result;
-
     if(!isDisplayed){
         isDisplayed = true;
     }
+
+    if(!isOperated){
+        isOperated = true;
+    }
+    
 
     operatingNumbers.items = [];
     operatingNumbers.operators.shift();
 });
 
 
-const clearButton = document.querySelector(".key.clear");
-clearButton.addEventListener('click', clearTab);
 
 function getResult()  {
     display.textContent = " ";        
@@ -101,16 +112,22 @@ function getResult()  {
         operatingNumbers.result = operate(operatingNumbers.result, operatingNumbers.items[0], operatingNumbers.operators[0]);
     }else {
         operatingNumbers.result = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
-
+        
     }
-    
-    display.textContent = operatingNumbers.result;
-
     if(!isDisplayed){
         isDisplayed = true;
     }
+    display.textContent = operatingNumbers.result;
+    
+    if(!isOperated){
+        isOperated = true;
+    }
+    
     operatingNumbers.items = [];
 }
+
+const clearButton = document.querySelector(".key.clear");
+clearButton.addEventListener('click', clearTab);
 
 function clearTab() {
     operatingNumbers.items = [];
@@ -126,3 +143,5 @@ function clearTab() {
 // 24/11 -> when a new operation is started, the operations are wrong.
 
 // 24/11 -> when equals is pressed, the next operation will use the result as the first item and also the second. -> fixed some of the redundant code and it was fixed.
+
+// When a new operation is started it should call clearTab()
