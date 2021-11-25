@@ -12,10 +12,11 @@ function divide(item1, item2){
     return item1 / item2;
 }
 
+const divideYourselfByZero = "Bitx, yer think this is a joke?!";
 function operate(item1, item2, operator){
     switch(operator){
         case "/":
-            return (item2 != 0) ? divide(item1, item2) : "Bitx, yer think this is a joke?!";
+            return (item2 != 0) ? divide(item1, item2) : alert(divideYourselfByZero);
         case "*":
             return multiply(item1, item2);
         case "+":
@@ -25,23 +26,25 @@ function operate(item1, item2, operator){
     }
 }
 
-let isOperated = false;
 
 const display = document.querySelector(".display");
 
 const operatorKeys = document.querySelectorAll(".operators .operator");
 
+//find a better way to do this(the logic)
+let isOperated = false;
 let isDisplayed = false;
+let counter = false;
+let counter2 = true;
 
 let operatingNumbers = {
     items: [],
     operators: [],
     result: undefined,
 };
-let counter;
 operatorKeys.forEach(key => {
     key.addEventListener('click', function(){
-        if(!isNaN(parseFloat(display.textContent)) && !isOperated){
+        if(!isNaN(parseFloat(display.textContent)) && !isOperated && !counter){
             operatingNumbers.items.push(parseFloat(display.textContent));
             counter = true;
         }else {
@@ -53,6 +56,10 @@ operatorKeys.forEach(key => {
             getResult();
             operatingNumbers.operators.shift();
         }
+
+        // if(!isDisplayed && operatingNumbers.result != undefined){
+
+        // }
         isDisplayed = false;
     });
 })
@@ -60,16 +67,24 @@ operatorKeys.forEach(key => {
 const keypad = document.querySelectorAll(".keypad .key");
 keypad.forEach(key => {
     key.addEventListener('click', function() {
-        if(isDisplayed){
+        if(isDisplayed && operatingNumbers.operators.length <1){
             isDisplayed = false;
             clearTab();
         }
+
         if (display.textContent == 0){
             display.textContent = " ";
             
         }
-
+        
         if(counter) counter=false;
+        
+        
+        if(!counter2 && operatingNumbers.operators.length <1){
+            clearTab();
+            counter2 = true;
+        }
+        
         if(isOperated){
             display.textContent = " ";
             isOperated = false;
@@ -90,35 +105,30 @@ equalsKey.addEventListener('click', function ()  {
     
     if(!isNaN(operatingNumbers.result)) {
         operationResult= operate(operatingNumbers.result, operatingNumbers.items[0], operatingNumbers.operators[0]);
-        console.log("halo");
     }else {
         operationResult = operate(operatingNumbers.items[0],operatingNumbers.items[1], operatingNumbers.operators[0]);
         
     }
     
-    if(!isDisplayed){
-        isDisplayed = true;
-    }
+    isDisplayed = true;
     
     if(!isOperated){
         isOperated = true;
     }
-    console.log(operationResult + " 1");
 
-    console.log(operatingNumbers.items + " length");
     if(operatingNumbers.items.length < 2 && operatingNumbers.result == undefined){
         operationResult = parseFloat(display.textContent);
         isDisplayed = false;
-        console.log(operationResult + " 2");
+        counter = true;
+        counter2 = false;
 
-        console.log("no operation stated");
     }else {
         display.textContent = " "; 
     }
     operatingNumbers.items = [];
     operatingNumbers.operators.shift();
     
-    console.log(operationResult + " 3");
+    operationResult = Math.round(operationResult * 100000000) / (100000000);
     operatingNumbers.result = operationResult;
     display.textContent = operationResult;
 
@@ -166,4 +176,6 @@ function clearTab() {
 
 // 24/11 -> when equals is pressed, the next operation will use the result as the first item and also the second. -> fixed some of the redundant code and it was fixed.
 
-// When a new operation is started it should call clearTab()
+// 25/11 When a new operation is started it should call clearTab()
+
+// 25/11 Have to add the "." operator and make its functionality.
